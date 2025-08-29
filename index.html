@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AARG TOURNAMENTS [BGMI]</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"> -->
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <!-- <div class="nav-container"> -->
+            <div class="nav-right">
+                <img id="logo" src="assets/AARG-LOGO.jpg" alt="">
+                <span class="brand-name">AARG Tournaments [BGMI]</span>
+            </div>
+            <div class="nav-left">
+                <button class="nav-btn" onclick="scrollToHome()">Home</button>
+                <button class="nav-btn register-btn" onclick="openRegistration()">Register</button>
+            </div>
+        <!-- </div> -->
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section id="home" class="hero-section">
+            <div class="hero-background"></div>
+            <div class="hero-content">
+                <h1 class="hero-title">Welcome to BGMI Arena</h1>
+                <p class="hero-subtitle">The Ultimate Battleground Mobile India Tournament</p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">₹50,000</span>
+                        <span class="stat-label">Prize Pool</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">64</span>
+                        <span class="stat-label">Teams</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">3</span>
+                        <span class="stat-label">Days</span>
+                    </div>
+                </div>
+                <button class="cta-button" onclick="openRegistration()">
+                    Join Tournament
+                </button>
+            </div>
+        </section>
+
+        <!-- Tournament Info -->
+        <section class="tournament-info">
+            <div class="container">
+                <h2 class="section-title">Tournament Details</h2>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div class="info-icon">🏆</div>
+                        <h3>Prize Distribution</h3>
+                        <p>1st Place: ₹25,000<br>2nd Place: ₹15,000<br>3rd Place: ₹10,000</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">📅</div>
+                        <h3>Schedule</h3>
+                        <p>Registration: Dec 15-20<br>Qualifiers: Dec 22-23<br>Finals: Dec 25</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">⚡</div>
+                        <h3>Format</h3>
+                        <p>Squad Mode<br>4 Players per Team<br>Multiple Rounds</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Registration Modal -->
+    <div id="registrationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Tournament Registration</h2>
+                <button class="close-btn" onclick="closeRegistration()">&times;</button>
+            </div>
+            <form id="registrationForm" class="registration-form">
+                <!-- Name Field -->
+                <div class="form-group">
+                    <label for="name">Name *</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name">
+                    <span class="error-message" id="nameError"></span>
+                </div>
+
+                <!-- Phone Field -->
+                <div class="form-group">
+                    <label for="phone">Phone Number *</label>
+                    <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
+                    <span class="error-message" id="phoneError"></span>
+                </div>
+
+                <!-- Email Field -->
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email address">
+                    <span class="error-message" id="emailError"></span>
+                </div>
+
+                <!-- Team Name Field -->
+                <div class="form-group">
+                    <label for="teamName">Team Name *</label>
+                    <input type="text" id="teamName" name="teamName" placeholder="Enter your team name">
+                    <span class="error-message" id="teamNameError"></span>
+                </div>
+
+                <!-- Payment Section -->
+                <div class="payment-section">
+                    <h3 class="payment-title">💳 Payment Information</h3>
+                    
+                    <!-- QR Code -->
+                    <div class="qr-section">
+                        <div class="qr-placeholder">
+                            <div class="qr-icon">📱</div>
+                            <p>QR Code will be added here</p>
+                            <small>Scan to pay tournament fees</small>
+                        </div>
+                    </div>
+
+                    <!-- UPI ID -->
+                    <div class="upi-section">
+                        <strong>UPI ID:</strong>
+                        <span>example@upi (Will be updated)</span>
+                    </div>
+
+                    <!-- UTR Number Field -->
+                    <div class="form-group">
+                        <label for="utrNumber">UTR Number *</label>
+                        <input type="text" id="utrNumber" name="utrNumber" placeholder="Enter UTR number from payment">
+                        <span class="error-message" id="utrNumberError"></span>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="submit-btn">
+                    📤 Submit Registration
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <p>📧 Email: tournament@bgmiarena.com</p>
+                    <p>📞 Phone: +91 98765 43210</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Follow Us</h3>
+                    <div class="social-links">
+                        <a href="#" class="social-link">📱 WhatsApp</a>
+                        <a href="#" class="social-link">📷 Instagram</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 BGMI Arena. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
