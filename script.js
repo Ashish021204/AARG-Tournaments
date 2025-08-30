@@ -1,3 +1,14 @@
+/***********************
+  script.js (Updated)
+  - Keeps your UI/validation/toast/modal code
+  - Adds Google Sheets (Apps Script) posting
+***********************/
+
+/* ---------- CONFIG: paste your Google Apps Script Web App URL here ---------- */
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzeqlNC7llEUsLc7MMu-ns9EeGK4jdB-NVVaVseskV_tFOjFpM7yFECOPvsjdw7PxK7/exec "; 
+/* Example: "https://script.google.com/macros/s/AKfycbx.../exec" */
+
+/* ------------------ Modal open / close ------------------ */
 function openRegistration() {
     const modal = document.getElementById('registrationModal');
     modal.classList.add('show');
@@ -14,14 +25,14 @@ function closeRegistration() {
     clearAllErrors();
 }
 
-// Smooth scroll to home
+/* ------------------ Smooth scroll ------------------ */
 function scrollToHome() {
     document.getElementById('home').scrollIntoView({ 
         behavior: 'smooth' 
     });
 }
 
-// Form validation
+/* ------------------ Validation helpers ------------------ */
 function validateForm() {
     const fields = [
         { id: 'name', name: 'Name' },
@@ -88,22 +99,87 @@ function isValidPhone(phone) {
     return phoneRegex.test(phone.replace(/\s/g, ''));
 }
 
-// Form submission
-document.getElementById('registrationForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    if (validateForm()) {
-        // Show success message
+/* ------------------ Send to Google Sheets (Apps Script) ------------------
+   Notes:
+   - Replace GOOGLE_SCRIPT_URL with your deployed Apps Script Web App URL.
+   - We use mode: "no-cors" because Google Apps Script and GitHub Pages require it.
+   - no-cors prevents reading a response, but Apps Script will still receive the POST.
+------------------------------------------------------------------------- */
+async function sendToGoogleSheet(formDataObj) {
+    if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("PASTE_YOUR_GOOGLE_SCRIPT_URL_HERE")) {
+        console.warn("Google Script URL not set. Skipping sendToGoogleSheet.");
+        return;
+    }
+
+    try {
+        // Apps Script expects JSON in e.postData.contents if you parse it that way.
+        await fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formDataObj)
+        });
+        // can't inspect response due to no-cors — assume success if no network error
+    } catch (err) {
+        // network-level errors (very rare with no-cors) will be caught here
+        console.error("Error posting to Google Script:", err);
+    }
+}
+
+/* ------------------ Form submission handling (single source of truth) ------------------ */
+(function wireFormSubmission() {
+    const form = document.getElementById('registrationForm');
+    if (!form) return;
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        // If any other submit listeners exist in the page, our validation is authoritative.
+        // Prevent double-handling by disabling the submit button early.
+        const submitBtn = document.querySelector('.submit-btn');
+        const originalText = submitBtn ? submitBtn.innerHTML : null;
+
+        // Run validation
+        if (!validateForm()) return;
+
+        // Show loading state
+        if (submitBtn) {
+            submitBtn.innerHTML = '⏳ Submitting...';
+            submitBtn.disabled = true;
+        }
+
+        // Collect form data
+        const formDataObj = {
+            name: document.getElementById('name').value.trim(),
+            phone: document.getElementById('phone').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            teamName: document.getElementById('teamName').value.trim(),
+            utrNumber: document.getElementById('utrNumber').value.trim(),
+            submittedAt: new Date().toISOString()
+        };
+
+        // Send to Google Sheet (fire-and-forget; no-cors means we can't reliably read response)
+        await sendToGoogleSheet(formDataObj);
+
+        // Show success toast
         showSuccessToast();
-        
-        // Close modal after short delay
+
+        // Reset button and re-enable
+        if (submitBtn) {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+
+        // Close modal after short delay (keeps same UX as before)
         setTimeout(() => {
             closeRegistration();
         }, 2000);
-    }
-});
+    });
+})();
 
-// Success toast notification
+/* ------------------ Success toast notification ------------------ */
 function showSuccessToast() {
     // Create toast element
     const toast = document.createElement('div');
@@ -201,28 +277,29 @@ function showSuccessToast() {
     }, 4000);
 }
 
-// Real-time validation (clear errors when user starts typing)
+/* ------------------ Real-time validation (clear errors while typing) ------------------ */
 document.addEventListener('DOMContentLoaded', function() {
     const inputs = document.querySelectorAll('#registrationForm input');
     
     inputs.forEach(input => {
         input.addEventListener('input', function() {
             const errorElement = document.getElementById(input.id + 'Error');
-            if (errorElement.classList.contains('show')) {
+            if (errorElement && errorElement.classList.contains('show')) {
                 errorElement.classList.remove('show');
+                errorElement.textContent = '';
             }
         });
     });
 });
 
-// Close modal when clicking outside
+/* ------------------ Close modal when clicking outside ------------------ */
 document.getElementById('registrationModal').addEventListener('click', function(e) {
     if (e.target === this) {
         closeRegistration();
     }
 });
 
-// Keyboard navigation
+/* ------------------ Keyboard navigation ------------------ */
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         const modal = document.getElementById('registrationModal');
@@ -232,7 +309,7 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// Smooth scrolling for internal links
+/* ------------------ Interactive effects (cards, hero parallax) ------------------ */
 document.addEventListener('DOMContentLoaded', function() {
     // Add some interactive effects
     const cards = document.querySelectorAll('.info-card');
@@ -255,32 +332,4 @@ document.addEventListener('DOMContentLoaded', function() {
             heroBackground.style.transform = `translateY(${scrolled * 0.5}px)`;
         }
     });
-});
-
-// Add loading animation to submit button
-document.getElementById('registrationForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const submitBtn = document.querySelector('.submit-btn');
-    const originalText = submitBtn.innerHTML;
-    
-    if (validateForm()) {
-        // Show loading state
-        submitBtn.innerHTML = '⏳ Submitting...';
-        submitBtn.disabled = true;
-        
-        // Simulate processing time
-        setTimeout(() => {
-            showSuccessToast();
-            
-            // Reset button
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-            
-            // Close modal
-            setTimeout(() => {
-                closeRegistration();
-            }, 2000);
-        }, 1500);
-    }
 });
